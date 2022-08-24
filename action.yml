@@ -1,0 +1,12 @@
+name: 'SDM change action'
+description: 'Creates an SDM change events from the github change'
+inputs:
+  access-token:  # id of input
+    description: 'The access token for auth'
+    required: true
+outputs:
+  time: # id of output
+    description: 'The time the change was created'
+runs:
+  using: 'node12'
+  main: 'index.js'
