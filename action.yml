@@ -1,12 +1,50 @@
-name: 'SDM change action'
-description: 'Creates an SDM change events from the github change'
+name: 'SDM Change composite action'
 inputs:
-  access-token:  # id of input
-    description: 'The access token for auth'
+  workload_identity_provider:
+    description: |-
+      The full identifier of the Workload Identity Provider, including the
+      project number, pool name, and provider name. If provided, this must be
+      the full identifier which includes all parts, for example:
+      "projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider".
+      This is mutually exclusive with "credentials_json".
+    required: false
+  service_account:
+    description: |-
+      Email address or unique identifier of the Google Cloud service account for
+      which to generate credentials. This is required if
+      "workload_identity_provider" is specified.
+    required: false
+  project_id:
+    description: 'Project ID for SDM'
+    required: true
+  location:
+    description: 'Location for SDM'
     required: true
 outputs:
-  time: # id of output
-    description: 'The time the change was created'
+  random-number:
+    time:
+      description: 'The time the change was created'
 runs:
-  using: 'node12'
-  main: 'index.js'
+  using: "composite"
+  steps:
+    # To use this repository's private action,
+    # you must check out the repository
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Configure Workload Identity Federation and generate an access token.
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        workload_identity_provider: ${{ inputs.workload_identity_provider }}
+        service_account: ${{ inputs.service_account }}
+        access_token_lifetime: '300s' # optional, default: '3600s' (1 hour)
+
+    # This is authenticated.
+    - name: Send change request
+      uses: 'Yiyang-W/sdm-change@'
+      id: 'sdm-send-change-request'
+      with:
+        project_id: ${{ inputs.project_id }}
+        location: ${{ inputs.location }}
