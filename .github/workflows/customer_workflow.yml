@@ -1,0 +1,16 @@
+name: Sample customer workflow
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  sample-customer-workflow:
+    runs-on: ubuntu-latest
+    name: Deploy something
+    steps:
+      # To use this repository's private action,
+      # you must check out the repository
+      - name: Checkout
+        uses: actions/checkout@v3

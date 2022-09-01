@@ -1,0 +1,37 @@
+name: SDM Record Deployment
+
+on:
+  workflow_run:
+    workflows: [Sample customer workflow]
+    types:
+      - completed
+
+jobs:
+  sdm-change-ingest:
+    runs-on: ubuntu-latest
+    name: Ingest change
+    steps:
+      # To use this repository's private action,
+      # you must check out the repository
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Configure Workload Identity Federation and generate an access token.
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          token_format: 'access_token' # <--
+          workload_identity_provider: 'projects/yiyangw1004/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+          service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
+          access_token_lifetime: '300s' # optional, default: '3600s' (1 hour)
+
+      - name: Send change request
+        uses: ./ # Uses an action in the root directory
+        id: 'sdm-send-change-request'
+        with:
+          access_token: 'Some token'
+      # Use the output from the `hello` step
+      - name: Get the output time
+        run: echo "The time was ${{ steps.hello.outputs.time }}"
+        
