@@ -1,4 +1,4 @@
-name: SDM Record Deployment
+name: SDM Record Deployment workflow
 
 on:
   workflow_run:
@@ -7,7 +7,7 @@ on:
       - completed
 
 jobs:
-  sdm-record-deployment:
+  sdm-record-deployment-job:
     runs-on: ubuntu-latest
     steps:
     - name: Dump GitHub context

@@ -13,3 +13,13 @@ jobs:
       # you must check out the repository
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: 'Create Sample deployment.json'
+        run: echo 'alpha' > deployment_artifact.json
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          name: deployment_artifact
+          path: deployment_artifact.json
+          retention-days: 5
